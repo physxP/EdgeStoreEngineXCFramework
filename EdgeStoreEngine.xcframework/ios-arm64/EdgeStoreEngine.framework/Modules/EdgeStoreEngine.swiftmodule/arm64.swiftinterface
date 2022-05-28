@@ -1,0 +1,358 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name EdgeStoreEngine
+import Accelerate
+import Combine
+import CoreGraphics
+import CoreImage
+import CoreML
+import CoreVideo
+import CryptoKit
+import Darwin
+@_exported import EdgeStoreEngine
+import Foundation
+import Swift
+import SwiftUI
+import TensorFlowLiteC
+import UIKit
+import VideoToolbox
+import _Concurrency
+extension Swift.Array where Element : Swift.Comparable {
+  public func argmax() -> (Swift.Int, Element)
+  public func argsort(by areInIncreasingOrder: (Element, Element) -> Swift.Bool) -> [Swift.Array<Element>.Index]
+  public func gather(indices: [Swift.Array<Element>.Index]) -> [Element]
+}
+extension CoreGraphics.CGImage {
+  public func pixelBuffer() -> CoreVideo.CVPixelBuffer?
+  public func pixelBuffer(width: Swift.Int, height: Swift.Int, orientation: ImageIO.CGImagePropertyOrientation) -> CoreVideo.CVPixelBuffer?
+  public func pixelBufferGray() -> CoreVideo.CVPixelBuffer?
+  public func pixelBufferGray(width: Swift.Int, height: Swift.Int, orientation: ImageIO.CGImagePropertyOrientation) -> CoreVideo.CVPixelBuffer?
+  public func pixelBuffer(width: Swift.Int, height: Swift.Int, pixelFormatType: Darwin.OSType, colorSpace: CoreGraphics.CGColorSpace, alphaInfo: CoreGraphics.CGImageAlphaInfo, orientation: ImageIO.CGImagePropertyOrientation) -> CoreVideo.CVPixelBuffer?
+}
+extension CoreGraphics.CGImage {
+  public static func create(pixelBuffer: CoreVideo.CVPixelBuffer) -> CoreGraphics.CGImage?
+  public static func create(pixelBuffer: CoreVideo.CVPixelBuffer, context: CoreImage.CIContext) -> CoreGraphics.CGImage?
+}
+extension CoreGraphics.CGImage {
+  @nonobjc public func toByteArrayRGBA() -> [Swift.UInt8]
+  @nonobjc public class func fromByteArrayRGBA(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int) -> CoreGraphics.CGImage?
+  @nonobjc public class func fromByteArrayGray(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int) -> CoreGraphics.CGImage?
+}
+extension ImageIO.CGImagePropertyOrientation {
+  public init(_ orientation: UIKit.UIImage.Orientation)
+}
+extension ImageIO.CGImagePropertyOrientation {
+  public init(_ orientation: UIKit.UIDeviceOrientation)
+}
+@available(iOS 13.0, tvOS 13.0, macOS 10.15, *)
+extension Combine.Publisher where Self.Output : CoreML.MLFeatureProvider {
+  public func prediction(model: CoreML.MLModel) -> Combine.Publishers.Map<Self, Swift.Result<CoreML.MLFeatureProvider, Swift.Error>>
+  public func prediction(model: CoreML.MLModel) -> Combine.Publishers.CompactMap<Self, CoreML.MLFeatureProvider>
+  public func prediction(model: CoreML.MLModel) -> Combine.Publishers.TryMap<Self, CoreML.MLFeatureProvider?>
+}
+public func createPixelBuffer(width: Swift.Int, height: Swift.Int, pixelFormat: Darwin.OSType) -> CoreVideo.CVPixelBuffer?
+public func createPixelBuffer(width: Swift.Int, height: Swift.Int) -> CoreVideo.CVPixelBuffer?
+public func _createPixelBuffer(width: Swift.Int, height: Swift.Int, pixelFormat: Darwin.OSType) -> CoreVideo.CVPixelBuffer?
+extension CoreVideo.CVBuffer {
+  public func copyToMetalCompatible() -> CoreVideo.CVPixelBuffer?
+  public func deepCopy(withAttributes attributes: [Swift.String : Any] = [:]) -> CoreVideo.CVPixelBuffer?
+}
+public func resizePixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to dstPixelBuffer: CoreVideo.CVPixelBuffer, cropX: Swift.Int, cropY: Swift.Int, cropWidth: Swift.Int, cropHeight: Swift.Int, scaleWidth: Swift.Int, scaleHeight: Swift.Int)
+public func resizePixelBuffer(_ srcPixelBuffer: CoreVideo.CVPixelBuffer, cropX: Swift.Int, cropY: Swift.Int, cropWidth: Swift.Int, cropHeight: Swift.Int, scaleWidth: Swift.Int, scaleHeight: Swift.Int) -> CoreVideo.CVPixelBuffer?
+public func resizePixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to dstPixelBuffer: CoreVideo.CVPixelBuffer, width: Swift.Int, height: Swift.Int)
+public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swift.Int, height: Swift.Int) -> CoreVideo.CVPixelBuffer?
+public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swift.Int, height: Swift.Int, output: CoreVideo.CVPixelBuffer, context: CoreImage.CIContext)
+public func rotate90PixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to dstPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8)
+public func rotate90PixelBuffer(_ srcPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8) -> CoreVideo.CVPixelBuffer?
+public protocol Delegate : AnyObject {
+  typealias CDelegate = Swift.UnsafeMutablePointer<TensorFlowLiteC.TfLiteDelegate>
+  var cDelegate: Self.CDelegate { get }
+}
+public class EdgeModel {
+  public var modelWarmedUp: Swift.Bool
+  public init(modelPath: Swift.String) throws
+  public func runBenchmarks(inputs: [Any], warmup: Swift.Int = 1, iterations: Swift.Int = 10) throws
+  public func run(inputs: [Any]) throws -> EdgeStoreEngine.Recognitions
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class Interpreter {
+  final public let options: EdgeStoreEngine.Interpreter.Options?
+  final public let delegates: [EdgeStoreEngine.Delegate]?
+  final public var inputTensorCount: Swift.Int {
+    get
+  }
+  final public var outputTensorCount: Swift.Int {
+    get
+  }
+  convenience public init(modelPath: Swift.String, options: EdgeStoreEngine.Interpreter.Options? = nil, delegates: [EdgeStoreEngine.Delegate]? = nil) throws
+  convenience public init(modelData: Foundation.Data, options: EdgeStoreEngine.Interpreter.Options? = nil, delegates: [EdgeStoreEngine.Delegate]? = nil) throws
+  @objc deinit
+  final public func invoke() throws
+  final public func input(at index: Swift.Int) throws -> EdgeStoreEngine.Tensor
+  final public func output(at index: Swift.Int) throws -> EdgeStoreEngine.Tensor
+  final public func resizeInput(at index: Swift.Int, to shape: EdgeStoreEngine.Tensor.Shape) throws
+  @discardableResult
+  final public func copy(_ data: Foundation.Data, toInputAt index: Swift.Int) throws -> EdgeStoreEngine.Tensor
+  final public func allocateTensors() throws
+}
+extension EdgeStoreEngine.Interpreter {
+  public struct Options : Swift.Equatable, Swift.Hashable {
+    public var threadCount: Swift.Int?
+    public var isXNNPackEnabled: Swift.Bool
+    public init()
+    public static func == (a: EdgeStoreEngine.Interpreter.Options, b: EdgeStoreEngine.Interpreter.Options) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+@available(*, deprecated, renamed: "Interpreter.Options")
+public typealias InterpreterOptions = EdgeStoreEngine.Interpreter.Options
+public enum InterpreterError : Swift.Error, Swift.Equatable, Swift.Hashable {
+  case invalidTensorIndex(index: Swift.Int, maxIndex: Swift.Int)
+  case invalidTensorDataCount(provided: Swift.Int, required: Swift.Int)
+  case invalidTensorDataType
+  case failedToLoadModel
+  case failedToCreateInterpreter
+  case failedToResizeInputTensor(index: Swift.Int)
+  case failedToCopyDataToInputTensor
+  case failedToAllocateTensors
+  case allocateTensorsRequired
+  case invokeInterpreterRequired
+  case tensorFlowLiteError(Swift.String)
+  public static func == (a: EdgeStoreEngine.InterpreterError, b: EdgeStoreEngine.InterpreterError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension EdgeStoreEngine.InterpreterError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension EdgeStoreEngine.InterpreterError : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+public struct Keypoint {
+  public var confidence: CoreGraphics.CGFloat
+  public var point: CoreGraphics.CGPoint
+  public var displayName: Swift.String
+  public mutating func update(confidence: CoreGraphics.CGFloat? = nil, point: CoreGraphics.CGPoint? = nil, displayName: Swift.String? = nil)
+  public func updateCopy(confidence: CoreGraphics.CGFloat? = nil, point: CoreGraphics.CGPoint? = nil, displayName: Swift.String? = nil) -> EdgeStoreEngine.Keypoint
+}
+public struct Keypoints : Swift.RangeReplaceableCollection {
+  public var skeleton: [[Swift.Int]]
+  public typealias Element = EdgeStoreEngine.Keypoint
+  public typealias Index = Swift.Int
+  public typealias SubSequence = EdgeStoreEngine.Keypoints
+  public typealias Indices = Swift.Range<Swift.Int>
+  public var startIndex: Swift.Int {
+    get
+  }
+  public var endIndex: Swift.Int {
+    get
+  }
+  public var indices: Swift.Range<Swift.Int> {
+    get
+  }
+  public func index(after i: Swift.Int) -> Swift.Int
+  public init()
+  public typealias Iterator = Swift.IndexingIterator<EdgeStoreEngine.Keypoints>
+}
+extension EdgeStoreEngine.Keypoints {
+  public init(_ keypoints: EdgeStoreEngine.Keypoints)
+  public init<S>(_ elements: S, skeleton: [[Swift.Int]]) where S : Swift.Sequence, S.Element == EdgeStoreEngine.Keypoints.Element
+  public init(repeating repeatedValue: EdgeStoreEngine.Keypoints.Element, count: Swift.Int, skeleton: [[Swift.Int]])
+}
+extension EdgeStoreEngine.Keypoints {
+  public mutating func append(_ newElement: EdgeStoreEngine.Keypoints.Element)
+  public mutating func append<S>(contentsOf newElements: S) where S : Swift.Sequence, S.Element == EdgeStoreEngine.Keypoints.Element
+  public mutating func insert(_ newElement: EdgeStoreEngine.Keypoints.Element, at i: EdgeStoreEngine.Keypoints.Index)
+  public mutating func insert<S>(contentsOf newElements: S, at i: EdgeStoreEngine.Keypoints.Index) where S : Swift.Collection, S.Element == EdgeStoreEngine.Keypoints.Element
+  @discardableResult
+  public mutating func remove(at i: EdgeStoreEngine.Keypoints.Index) -> EdgeStoreEngine.Keypoints.Element
+  public mutating func removeAll(keepingCapacity keepCapacity: Swift.Bool)
+  public mutating func removeAll(where shouldBeRemoved: (EdgeStoreEngine.Keypoints.Element) throws -> Swift.Bool) rethrows
+  @discardableResult
+  public mutating func removeFirst() -> EdgeStoreEngine.Keypoints.Element
+  public mutating func removeFirst(_ k: Swift.Int)
+  public mutating func removeSubrange(_ bounds: Swift.Range<Swift.Int>)
+  public mutating func replaceSubrange<C, R>(_ subrange: R, with newElements: C) where C : Swift.Collection, R : Swift.RangeExpression, C.Element == EdgeStoreEngine.Keypoint, R.Bound == EdgeStoreEngine.Keypoints.Index
+  public mutating func reserveCapacity(_ n: Swift.Int)
+}
+extension EdgeStoreEngine.Keypoints {
+  public subscript(bounds: Swift.Range<EdgeStoreEngine.Keypoints.Index>) -> EdgeStoreEngine.Keypoints.SubSequence {
+    get
+  }
+  public subscript(bounds: EdgeStoreEngine.Keypoints.Index) -> EdgeStoreEngine.Keypoints.Element {
+    get
+    set(value)
+  }
+}
+public func argmax(_ array: [Swift.Float], count: Swift.Int? = nil) -> (Swift.Int, Swift.Float)
+public func argmax(_ ptr: Swift.UnsafePointer<Swift.Float>, count: Swift.Int, stride: Swift.Int = 1) -> (Swift.Int, Swift.Float)
+public func argmax(_ array: [Swift.Double], count: Swift.Int? = nil) -> (Swift.Int, Swift.Double)
+public func argmax(_ ptr: Swift.UnsafePointer<Swift.Double>, count: Swift.Int, stride: Swift.Int = 1) -> (Swift.Int, Swift.Double)
+public func clamp<T>(_ x: T, min: T, max: T) -> T where T : Swift.Comparable
+public func sigmoid(_ x: Swift.Float) -> Swift.Float
+public func sigmoid(_ x: Swift.Double) -> Swift.Double
+public func sigmoid(_ x: Swift.UnsafeMutablePointer<Swift.Float>, count: Swift.Int)
+public func sigmoid(_ x: Swift.UnsafeMutablePointer<Swift.Double>, count: Swift.Int)
+public func softmax(_ x: [Swift.Float]) -> [Swift.Float]
+public struct BoundingBox {
+  public let classIndex: Swift.Int
+  public let score: Swift.Float
+  public let rect: CoreGraphics.CGRect
+  public init(classIndex: Swift.Int, score: Swift.Float, rect: CoreGraphics.CGRect)
+}
+public func IOU(_ a: CoreGraphics.CGRect, _ b: CoreGraphics.CGRect) -> Swift.Float
+public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
+public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], indices: [Swift.Int], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
+public func nonMaxSuppressionMultiClass(numClasses: Swift.Int, boundingBoxes: [EdgeStoreEngine.BoundingBox], scoreThreshold: Swift.Float, iouThreshold: Swift.Float, maxPerClass: Swift.Int, maxTotal: Swift.Int) -> [Swift.Int]
+public struct QuantizationParameters : Swift.Equatable, Swift.Hashable {
+  public let scale: Swift.Float
+  public let zeroPoint: Swift.Int
+  public static func == (a: EdgeStoreEngine.QuantizationParameters, b: EdgeStoreEngine.QuantizationParameters) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct Recognition {
+}
+public struct Recognitions : Swift.RangeReplaceableCollection {
+  public typealias Element = EdgeStoreEngine.Recognition
+  public typealias Index = Swift.Int
+  public typealias SubSequence = EdgeStoreEngine.Recognitions
+  public typealias Indices = Swift.Range<Swift.Int>
+  public var startIndex: Swift.Int {
+    get
+  }
+  public var endIndex: Swift.Int {
+    get
+  }
+  public var indices: Swift.Range<Swift.Int> {
+    get
+  }
+  public func index(after i: Swift.Int) -> Swift.Int
+  public init()
+  public func drawOnUIImage(image: UIKit.UIImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> UIKit.UIImage
+  public typealias Iterator = Swift.IndexingIterator<EdgeStoreEngine.Recognitions>
+}
+extension EdgeStoreEngine.Recognitions {
+  public init<S>(_ elements: S) where S : Swift.Sequence, S.Element == EdgeStoreEngine.Recognitions.Element
+  public init(repeating repeatedValue: EdgeStoreEngine.Recognitions.Element, count: Swift.Int)
+}
+extension EdgeStoreEngine.Recognitions {
+  public mutating func append(_ newElement: EdgeStoreEngine.Recognitions.Element)
+  public mutating func append<S>(contentsOf newElements: S) where S : Swift.Sequence, S.Element == EdgeStoreEngine.Recognitions.Element
+  public mutating func insert(_ newElement: EdgeStoreEngine.Recognitions.Element, at i: EdgeStoreEngine.Recognitions.Index)
+  public mutating func insert<S>(contentsOf newElements: S, at i: EdgeStoreEngine.Recognitions.Index) where S : Swift.Collection, S.Element == EdgeStoreEngine.Recognitions.Element
+  @discardableResult
+  public mutating func remove(at i: EdgeStoreEngine.Recognitions.Index) -> EdgeStoreEngine.Recognitions.Element
+  public mutating func removeAll(keepingCapacity keepCapacity: Swift.Bool)
+  public mutating func removeAll(where shouldBeRemoved: (EdgeStoreEngine.Recognitions.Element) throws -> Swift.Bool) rethrows
+  @discardableResult
+  public mutating func removeFirst() -> EdgeStoreEngine.Recognitions.Element
+  public mutating func removeFirst(_ k: Swift.Int)
+  public mutating func removeSubrange(_ bounds: Swift.Range<Swift.Int>)
+  public mutating func replaceSubrange<C, R>(_ subrange: R, with newElements: C) where C : Swift.Collection, R : Swift.RangeExpression, C.Element == EdgeStoreEngine.Recognition, R.Bound == EdgeStoreEngine.Recognitions.Index
+  public mutating func reserveCapacity(_ n: Swift.Int)
+}
+extension EdgeStoreEngine.Recognitions {
+  public subscript(bounds: Swift.Range<EdgeStoreEngine.Recognitions.Index>) -> EdgeStoreEngine.Recognitions.SubSequence {
+    get
+  }
+  public subscript(bounds: EdgeStoreEngine.Recognitions.Index) -> EdgeStoreEngine.Recognitions.Element {
+    get
+    set(value)
+  }
+}
+public enum TableSpacing {
+  case fillProportionally
+  case fillEqually
+  public static func == (a: EdgeStoreEngine.TableSpacing, b: EdgeStoreEngine.TableSpacing) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@discardableResult
+public func print(table data: Any, header: [Swift.String]? = nil, distribution: EdgeStoreEngine.TableSpacing = .fillProportionally, terminator: Swift.String = "") -> Swift.String
+public struct Tensor : Swift.Equatable, Swift.Hashable {
+  public let name: Swift.String
+  public let dataType: EdgeStoreEngine.Tensor.DataType
+  public let shape: EdgeStoreEngine.Tensor.Shape
+  public let data: Foundation.Data
+  public let quantizationParameters: EdgeStoreEngine.QuantizationParameters?
+  public static func == (a: EdgeStoreEngine.Tensor, b: EdgeStoreEngine.Tensor) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension EdgeStoreEngine.Tensor {
+  public enum DataType : Swift.Equatable, Swift.Hashable {
+    case bool
+    case uInt8
+    case int16
+    case int32
+    case int64
+    case float16
+    case float32
+    case float64
+    public static func == (a: EdgeStoreEngine.Tensor.DataType, b: EdgeStoreEngine.Tensor.DataType) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension EdgeStoreEngine.Tensor {
+  public struct Shape : Swift.Equatable, Swift.Hashable {
+    public let rank: Swift.Int
+    public let dimensions: [Swift.Int]
+    public init(_ dimensions: [Swift.Int])
+    public init(_ elements: Swift.Int...)
+    public static func == (a: EdgeStoreEngine.Tensor.Shape, b: EdgeStoreEngine.Tensor.Shape) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension EdgeStoreEngine.Tensor.Shape : Swift.ExpressibleByArrayLiteral {
+  public init(arrayLiteral: Swift.Int...)
+  public typealias ArrayLiteralElement = Swift.Int
+}
+public enum Runtime {
+  public static var version: Swift.String {
+    get
+  }
+}
+extension UIKit.UIImage {
+  public func pixelBuffer() -> CoreVideo.CVPixelBuffer?
+  public func pixelBuffer(width: Swift.Int, height: Swift.Int) -> CoreVideo.CVPixelBuffer?
+  public func pixelBufferGray() -> CoreVideo.CVPixelBuffer?
+  public func pixelBufferGray(width: Swift.Int, height: Swift.Int) -> CoreVideo.CVPixelBuffer?
+  public func pixelBuffer(width: Swift.Int, height: Swift.Int, pixelFormatType: Darwin.OSType, colorSpace: CoreGraphics.CGColorSpace, alphaInfo: CoreGraphics.CGImageAlphaInfo) -> CoreVideo.CVPixelBuffer?
+}
+extension UIKit.UIImage {
+  convenience public init?(pixelBuffer: CoreVideo.CVPixelBuffer)
+  convenience public init?(pixelBuffer: CoreVideo.CVPixelBuffer, context: CoreImage.CIContext)
+}
+extension UIKit.UIImage {
+  @nonobjc public func resized(to newSize: CoreGraphics.CGSize, scale: CoreGraphics.CGFloat = 1) -> UIKit.UIImage
+  @nonobjc public func rotated(by degrees: CoreGraphics.CGFloat, keepSize: Swift.Bool = true) -> UIKit.UIImage
+}
+extension UIKit.UIImage {
+  @nonobjc public func toByteArrayRGBA() -> [Swift.UInt8]?
+  @nonobjc public class func fromByteArrayRGBA(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int, scale: CoreGraphics.CGFloat = 0, orientation: UIKit.UIImage.Orientation = .up) -> UIKit.UIImage?
+  @nonobjc public class func fromByteArrayGray(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int, scale: CoreGraphics.CGFloat = 0, orientation: UIKit.UIImage.Orientation = .up) -> UIKit.UIImage?
+}
+extension EdgeStoreEngine.TableSpacing : Swift.Equatable {}
+extension EdgeStoreEngine.TableSpacing : Swift.Hashable {}
