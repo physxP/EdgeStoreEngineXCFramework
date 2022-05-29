@@ -64,75 +64,47 @@ public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swi
 public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swift.Int, height: Swift.Int, output: CoreVideo.CVPixelBuffer, context: CoreImage.CIContext)
 public func rotate90PixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to dstPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8)
 public func rotate90PixelBuffer(_ srcPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8) -> CoreVideo.CVPixelBuffer?
-public protocol Delegate : AnyObject {
-  typealias CDelegate = Swift.UnsafeMutablePointer<TensorFlowLiteC.TfLiteDelegate>
-  var cDelegate: Self.CDelegate { get }
-}
 public class EdgeModel {
   public var modelWarmedUp: Swift.Bool
   public init(modelPath: Swift.String) throws
   public func runBenchmarks(inputs: [Any], warmup: Swift.Int = 1, iterations: Swift.Int = 10) throws
+  public func startLogging()
+  public func stopLogging()
   public func run(inputs: [Any]) throws -> EdgeStoreEngine.Recognitions
   @objc deinit
 }
-@_hasMissingDesignatedInitializers final public class Interpreter {
-  final public let options: EdgeStoreEngine.Interpreter.Options?
-  final public let delegates: [EdgeStoreEngine.Delegate]?
-  final public var inputTensorCount: Swift.Int {
-    get
-  }
-  final public var outputTensorCount: Swift.Int {
-    get
-  }
-  convenience public init(modelPath: Swift.String, options: EdgeStoreEngine.Interpreter.Options? = nil, delegates: [EdgeStoreEngine.Delegate]? = nil) throws
-  convenience public init(modelData: Foundation.Data, options: EdgeStoreEngine.Interpreter.Options? = nil, delegates: [EdgeStoreEngine.Delegate]? = nil) throws
-  @objc deinit
-  final public func invoke() throws
-  final public func input(at index: Swift.Int) throws -> EdgeStoreEngine.Tensor
-  final public func output(at index: Swift.Int) throws -> EdgeStoreEngine.Tensor
-  final public func resizeInput(at index: Swift.Int, to shape: EdgeStoreEngine.Tensor.Shape) throws
-  @discardableResult
-  final public func copy(_ data: Foundation.Data, toInputAt index: Swift.Int) throws -> EdgeStoreEngine.Tensor
-  final public func allocateTensors() throws
-}
-extension EdgeStoreEngine.Interpreter {
-  public struct Options : Swift.Equatable, Swift.Hashable {
-    public var threadCount: Swift.Int?
-    public var isXNNPackEnabled: Swift.Bool
-    public init()
-    public static func == (a: EdgeStoreEngine.Interpreter.Options, b: EdgeStoreEngine.Interpreter.Options) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-@available(*, deprecated, renamed: "Interpreter.Options")
-public typealias InterpreterOptions = EdgeStoreEngine.Interpreter.Options
-public enum InterpreterError : Swift.Error, Swift.Equatable, Swift.Hashable {
-  case invalidTensorIndex(index: Swift.Int, maxIndex: Swift.Int)
-  case invalidTensorDataCount(provided: Swift.Int, required: Swift.Int)
-  case invalidTensorDataType
-  case failedToLoadModel
-  case failedToCreateInterpreter
-  case failedToResizeInputTensor(index: Swift.Int)
-  case failedToCopyDataToInputTensor
-  case failedToAllocateTensors
-  case allocateTensorsRequired
-  case invokeInterpreterRequired
-  case tensorFlowLiteError(Swift.String)
-  public static func == (a: EdgeStoreEngine.InterpreterError, b: EdgeStoreEngine.InterpreterError) -> Swift.Bool
+public enum EdgeModelError : Swift.Error, Swift.Equatable, Swift.Hashable {
+  case corruptModelFile
+  public static func == (a: EdgeStoreEngine.EdgeModelError, b: EdgeStoreEngine.EdgeModelError) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
 }
-extension EdgeStoreEngine.InterpreterError : Foundation.LocalizedError {
+extension EdgeStoreEngine.EdgeModelError : Foundation.LocalizedError {
   public var errorDescription: Swift.String? {
     get
   }
 }
-extension EdgeStoreEngine.InterpreterError : Swift.CustomStringConvertible {
+extension EdgeStoreEngine.EdgeModelError : Swift.CustomStringConvertible {
+  public var description: Swift.String {
+    get
+  }
+}
+public enum ImageConversionError : Swift.Error, Swift.Hashable, Swift.Equatable {
+  case uiToCVPixelBuffer
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: EdgeStoreEngine.ImageConversionError, b: EdgeStoreEngine.ImageConversionError) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension EdgeStoreEngine.ImageConversionError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension EdgeStoreEngine.ImageConversionError : Swift.CustomStringConvertible {
   public var description: Swift.String {
     get
   }
@@ -213,16 +185,12 @@ public func IOU(_ a: CoreGraphics.CGRect, _ b: CoreGraphics.CGRect) -> Swift.Flo
 public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
 public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], indices: [Swift.Int], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
 public func nonMaxSuppressionMultiClass(numClasses: Swift.Int, boundingBoxes: [EdgeStoreEngine.BoundingBox], scoreThreshold: Swift.Float, iouThreshold: Swift.Float, maxPerClass: Swift.Int, maxTotal: Swift.Int) -> [Swift.Int]
-public struct QuantizationParameters : Swift.Equatable, Swift.Hashable {
-  public let scale: Swift.Float
-  public let zeroPoint: Swift.Int
-  public static func == (a: EdgeStoreEngine.QuantizationParameters, b: EdgeStoreEngine.QuantizationParameters) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
 public struct Recognition {
+  public var id: Swift.Int?
+  public var displayName: Swift.String?
+  public var confidence: CoreGraphics.CGFloat?
+  public var location: CoreGraphics.CGRect?
+  public var keypoints: EdgeStoreEngine.Keypoints?
 }
 public struct Recognitions : Swift.RangeReplaceableCollection {
   public typealias Element = EdgeStoreEngine.Recognition
@@ -281,56 +249,31 @@ public enum TableSpacing {
     get
   }
 }
-@discardableResult
-public func print(table data: Any, header: [Swift.String]? = nil, distribution: EdgeStoreEngine.TableSpacing = .fillProportionally, terminator: Swift.String = "") -> Swift.String
-public struct Tensor : Swift.Equatable, Swift.Hashable {
-  public let name: Swift.String
-  public let dataType: EdgeStoreEngine.Tensor.DataType
-  public let shape: EdgeStoreEngine.Tensor.Shape
-  public let data: Foundation.Data
-  public let quantizationParameters: EdgeStoreEngine.QuantizationParameters?
-  public static func == (a: EdgeStoreEngine.Tensor, b: EdgeStoreEngine.Tensor) -> Swift.Bool
+public enum TFLInterpreterError : Swift.Error, Swift.Equatable, Swift.Hashable {
+  case invalidTensorIndex(index: Swift.Int, maxIndex: Swift.Int)
+  case invalidTensorDataCount(provided: Swift.Int, required: Swift.Int)
+  case invalidTensorDataType
+  case failedToLoadModel
+  case failedToCreateInterpreter
+  case failedToResizeInputTensor(index: Swift.Int)
+  case failedToCopyDataToInputTensor
+  case failedToAllocateTensors
+  case allocateTensorsRequired
+  case invokeInterpreterRequired
+  case tensorFlowLiteError(Swift.String)
+  public static func == (a: EdgeStoreEngine.TFLInterpreterError, b: EdgeStoreEngine.TFLInterpreterError) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
 }
-extension EdgeStoreEngine.Tensor {
-  public enum DataType : Swift.Equatable, Swift.Hashable {
-    case bool
-    case uInt8
-    case int16
-    case int32
-    case int64
-    case float16
-    case float32
-    case float64
-    public static func == (a: EdgeStoreEngine.Tensor.DataType, b: EdgeStoreEngine.Tensor.DataType) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
+extension EdgeStoreEngine.TFLInterpreterError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
   }
 }
-extension EdgeStoreEngine.Tensor {
-  public struct Shape : Swift.Equatable, Swift.Hashable {
-    public let rank: Swift.Int
-    public let dimensions: [Swift.Int]
-    public init(_ dimensions: [Swift.Int])
-    public init(_ elements: Swift.Int...)
-    public static func == (a: EdgeStoreEngine.Tensor.Shape, b: EdgeStoreEngine.Tensor.Shape) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-extension EdgeStoreEngine.Tensor.Shape : Swift.ExpressibleByArrayLiteral {
-  public init(arrayLiteral: Swift.Int...)
-  public typealias ArrayLiteralElement = Swift.Int
-}
-public enum Runtime {
-  public static var version: Swift.String {
+extension EdgeStoreEngine.TFLInterpreterError : Swift.CustomStringConvertible {
+  public var description: Swift.String {
     get
   }
 }

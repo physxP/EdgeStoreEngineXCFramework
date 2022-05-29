@@ -1,18 +1,18 @@
 {
   "name": "EdgeStoreEngine",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "summary": "EdgeStore SDK for running EdgeStore Models",
   "swift_versions": "5.0",
   "description": "Edge-engine is a simple yet powerful interface to port ML models to phone devices. It automates the underlying hardware utilization and switches between CPU/GPU when required to give maximum throughput.",
   "homepage": "https://github.com/physxP/EdgeStoreEngineXCFramework",
   "license": {
-    "type": "MIT",
+    "type": "Edge Store EULA",
     "file": "LICENSE"
   },
   "authors":  "EdgeStore",
   "source": {
     "git": "https://github.com/physxP/EdgeStoreEngineXCFramework.git",
-    "tag": "0.1.6"
+    "tag": "0.1.7"
   },
   "platforms": {
     "ios": "13.0"
