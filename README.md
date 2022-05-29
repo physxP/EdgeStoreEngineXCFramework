@@ -13,7 +13,9 @@ If your use case is not covered then please [contact us](https://www.edgestore.a
 
 
 ## Requirements
-
+If you need us to relax any requirement please open an issue or contact us. Current requirements:
+- iOS version ≥ 13.0
+- Tensorflow version ≥ 2.5.0 (if already installed)
 ## Installation
 
 EdgeStoreEngine is available through [CocoaPods](https://cocoapods.org). To install
@@ -79,7 +81,22 @@ for person in results {
 }
 ```
 
+## Options
+This section briefly discusses all the options that you can configure for the model. By default best options for common devices are already configured. Modify these if you have crashes or need to finetune performance.
 
+### TensorFlow Lite Options
+
+#### Use Accelerators
+
+When you initialise model you can specify to use following accelerators:
+- CoreML - Default On
+- Metal - Default On
+- XNNPack (Experimental) - Default Off
+Turining on these options usually increase performance.
+
+#### Num Threads
+
+You can also specify the num of threads you want to use for the model. If you leave this option to default value of nil then we choose the best setting according to the device cpu.
 
 
 

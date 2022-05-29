@@ -14,6 +14,8 @@ import Foundation
 import Swift
 import SwiftUI
 import TensorFlowLiteC
+import TensorFlowLiteCCoreML
+import TensorFlowLiteCMetal
 import UIKit
 import VideoToolbox
 import _Concurrency
@@ -66,11 +68,25 @@ public func rotate90PixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to
 public func rotate90PixelBuffer(_ srcPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8) -> CoreVideo.CVPixelBuffer?
 public class EdgeModel {
   public var modelWarmedUp: Swift.Bool
-  public init(modelPath: Swift.String) throws
+  public struct TFLOptions {
+    public init(threadCount: Swift.Int? = nil, isXNNPackEnabled: Swift.Bool = false, isCoreMLAccelearationEnabled: Swift.Bool = true, isMetalAccelerationEnabled: Swift.Bool = true)
+    public var threadCount: Swift.Int?
+    public var isXNNPackEnabled: Swift.Bool
+    public var isCoreMLAccelearationEnabled: Swift.Bool
+    public var isMetalAccelerationEnabled: Swift.Bool
+  }
+  public struct Options {
+    public var tflOptions: EdgeStoreEngine.EdgeModel.TFLOptions
+    public init()
+    public init(tflOptions: EdgeStoreEngine.EdgeModel.TFLOptions)
+  }
+  public var modelOptions: EdgeStoreEngine.EdgeModel.Options
+  public init(modelPath: Swift.String, options: EdgeStoreEngine.EdgeModel.Options? = nil) throws
   public func runBenchmarks(inputs: [Any], warmup: Swift.Int = 1, iterations: Swift.Int = 10) throws
   public func startLogging()
   public func stopLogging()
   public func run(inputs: [Any]) throws -> EdgeStoreEngine.Recognitions
+  public func printLogs(displayTable: Swift.Bool = true)
   @objc deinit
 }
 public enum EdgeModelError : Swift.Error, Swift.Equatable, Swift.Hashable {
