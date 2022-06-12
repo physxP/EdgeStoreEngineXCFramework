@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
 // swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name EdgeStoreEngine
 import Accelerate
 import Combine
@@ -9,6 +9,7 @@ import CoreML
 import CoreVideo
 import CryptoKit
 import Darwin
+import Dispatch
 @_exported import EdgeStoreEngine
 import Foundation
 import Swift
@@ -66,28 +67,31 @@ public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swi
 public func resizePixelBuffer(_ pixelBuffer: CoreVideo.CVPixelBuffer, width: Swift.Int, height: Swift.Int, output: CoreVideo.CVPixelBuffer, context: CoreImage.CIContext)
 public func rotate90PixelBuffer(from srcPixelBuffer: CoreVideo.CVPixelBuffer, to dstPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8)
 public func rotate90PixelBuffer(_ srcPixelBuffer: CoreVideo.CVPixelBuffer, factor: Swift.UInt8) -> CoreVideo.CVPixelBuffer?
-public class EdgeModel {
-  public var modelWarmedUp: Swift.Bool
-  public struct TFLOptions {
-    public init(threadCount: Swift.Int? = nil, isXNNPackEnabled: Swift.Bool = false, isCoreMLAccelearationEnabled: Swift.Bool = true, isMetalAccelerationEnabled: Swift.Bool = true)
-    public var threadCount: Swift.Int?
-    public var isXNNPackEnabled: Swift.Bool
-    public var isCoreMLAccelearationEnabled: Swift.Bool
-    public var isMetalAccelerationEnabled: Swift.Bool
-  }
-  public struct Options {
-    public var tflOptions: EdgeStoreEngine.EdgeModel.TFLOptions
-    public init()
-    public init(tflOptions: EdgeStoreEngine.EdgeModel.TFLOptions)
-  }
-  public var modelOptions: EdgeStoreEngine.EdgeModel.Options
+@_hasMissingDesignatedInitializers public class EdgeModel {
   public init(modelPath: Swift.String, options: EdgeStoreEngine.EdgeModel.Options? = nil) throws
-  public func runBenchmarks(inputs: [Any], warmup: Swift.Int = 1, iterations: Swift.Int = 10) throws
-  public func startLogging()
-  public func stopLogging()
   public func run(inputs: [Any]) throws -> EdgeStoreEngine.Recognitions
-  public func printLogs(displayTable: Swift.Bool = true)
+  public var logs: EdgeStoreEngine.BenchmarkLogs {
+    get
+  }
+  public func printLogs(useTable: Swift.Bool = true)
+  public struct Options {
+    public var tflOptions: EdgeStoreEngine.TFLOptions
+    public init()
+    public init(tflOptions: EdgeStoreEngine.TFLOptions)
+  }
   @objc deinit
+}
+public struct BenchmarkLogs {
+  @available(iOS 14.0, *)
+  public func getView() -> some SwiftUI.View
+  
+}
+public struct TFLOptions {
+  public init(threadCount: Swift.Int? = nil, isXNNPackEnabled: Swift.Bool = false, isCoreMLAccelearationEnabled: Swift.Bool = true, isMetalAccelerationEnabled: Swift.Bool = true)
+  public var threadCount: Swift.Int?
+  public var isXNNPackEnabled: Swift.Bool
+  public var isCoreMLAccelearationEnabled: Swift.Bool
+  public var isMetalAccelerationEnabled: Swift.Bool
 }
 public enum EdgeModelError : Swift.Error, Swift.Equatable, Swift.Hashable {
   case corruptModelFile
@@ -109,6 +113,7 @@ extension EdgeStoreEngine.EdgeModelError : Swift.CustomStringConvertible {
 }
 public enum ImageConversionError : Swift.Error, Swift.Hashable, Swift.Equatable {
   case uiToCVPixelBuffer
+  case resizeOpFailed
   public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: EdgeStoreEngine.ImageConversionError, b: EdgeStoreEngine.ImageConversionError) -> Swift.Bool
   public var hashValue: Swift.Int {
@@ -131,9 +136,11 @@ public struct Keypoint {
   public var displayName: Swift.String
   public mutating func update(confidence: CoreGraphics.CGFloat? = nil, point: CoreGraphics.CGPoint? = nil, displayName: Swift.String? = nil)
   public func updateCopy(confidence: CoreGraphics.CGFloat? = nil, point: CoreGraphics.CGPoint? = nil, displayName: Swift.String? = nil) -> EdgeStoreEngine.Keypoint
+  public mutating func applying(t: CoreGraphics.CGAffineTransform)
 }
 public struct Keypoints : Swift.RangeReplaceableCollection {
   public var skeleton: [[Swift.Int]]
+  public mutating func applying(t: CoreGraphics.CGAffineTransform)
   public typealias Element = EdgeStoreEngine.Keypoint
   public typealias Index = Swift.Int
   public typealias SubSequence = EdgeStoreEngine.Keypoints
@@ -186,8 +193,7 @@ public func argmax(_ ptr: Swift.UnsafePointer<Swift.Float>, count: Swift.Int, st
 public func argmax(_ array: [Swift.Double], count: Swift.Int? = nil) -> (Swift.Int, Swift.Double)
 public func argmax(_ ptr: Swift.UnsafePointer<Swift.Double>, count: Swift.Int, stride: Swift.Int = 1) -> (Swift.Int, Swift.Double)
 public func clamp<T>(_ x: T, min: T, max: T) -> T where T : Swift.Comparable
-public func sigmoid(_ x: Swift.Float) -> Swift.Float
-public func sigmoid(_ x: Swift.Double) -> Swift.Double
+public func sigmoid(_ x: CoreGraphics.CGFloat) -> CoreGraphics.CGFloat
 public func sigmoid(_ x: Swift.UnsafeMutablePointer<Swift.Float>, count: Swift.Int)
 public func sigmoid(_ x: Swift.UnsafeMutablePointer<Swift.Double>, count: Swift.Int)
 public func softmax(_ x: [Swift.Float]) -> [Swift.Float]
@@ -200,13 +206,26 @@ public struct BoundingBox {
 public func IOU(_ a: CoreGraphics.CGRect, _ b: CoreGraphics.CGRect) -> Swift.Float
 public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
 public func nonMaxSuppression(boundingBoxes: [EdgeStoreEngine.BoundingBox], indices: [Swift.Int], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> [Swift.Int]
+public func nonMaxSuppressionWeightedAverage(boundingBoxes: EdgeStoreEngine.Recognitions, indices: [Swift.Int], iouThreshold: Swift.Float, maxBoxes: Swift.Int) -> EdgeStoreEngine.Recognitions
 public func nonMaxSuppressionMultiClass(numClasses: Swift.Int, boundingBoxes: [EdgeStoreEngine.BoundingBox], scoreThreshold: Swift.Float, iouThreshold: Swift.Float, maxPerClass: Swift.Int, maxTotal: Swift.Int) -> [Swift.Int]
+public enum GraphError : Swift.Error {
+  case unsupportedType
+  case unsupportedOp
+  public static func == (a: EdgeStoreEngine.GraphError, b: EdgeStoreEngine.GraphError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 public struct Recognition {
   public var id: Swift.Int?
   public var displayName: Swift.String?
   public var confidence: CoreGraphics.CGFloat?
   public var location: CoreGraphics.CGRect?
   public var keypoints: EdgeStoreEngine.Keypoints?
+  public mutating func update(id: Swift.Int? = nil, displayName: Swift.String? = nil, confidence: CoreGraphics.CGFloat? = nil, location: CoreGraphics.CGRect? = nil, keypoints: EdgeStoreEngine.Keypoints? = nil)
+  public func updateCopy(id: Swift.Int? = nil, displayName: Swift.String? = nil, confidence: CoreGraphics.CGFloat? = nil, location: CoreGraphics.CGRect? = nil, keypoints: EdgeStoreEngine.Keypoints? = nil) -> EdgeStoreEngine.Recognition
+  public mutating func applying(tr: CoreGraphics.CGAffineTransform)
 }
 public struct Recognitions : Swift.RangeReplaceableCollection {
   public typealias Element = EdgeStoreEngine.Recognition
@@ -224,7 +243,10 @@ public struct Recognitions : Swift.RangeReplaceableCollection {
   }
   public func index(after i: Swift.Int) -> Swift.Int
   public init()
-  public func drawOnUIImage(image: UIKit.UIImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> UIKit.UIImage
+  public mutating func applying(t: CoreGraphics.CGAffineTransform)
+  public func draw(pixelBuffer: CoreVideo.CVPixelBuffer, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
+  public func draw(cgImage: CoreGraphics.CGImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
+  public func draw(uiImage: UIKit.UIImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> UIKit.UIImage
   public typealias Iterator = Swift.IndexingIterator<EdgeStoreEngine.Recognitions>
 }
 extension EdgeStoreEngine.Recognitions {
@@ -313,5 +335,7 @@ extension UIKit.UIImage {
   @nonobjc public class func fromByteArrayRGBA(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int, scale: CoreGraphics.CGFloat = 0, orientation: UIKit.UIImage.Orientation = .up) -> UIKit.UIImage?
   @nonobjc public class func fromByteArrayGray(_ bytes: [Swift.UInt8], width: Swift.Int, height: Swift.Int, scale: CoreGraphics.CGFloat = 0, orientation: UIKit.UIImage.Orientation = .up) -> UIKit.UIImage?
 }
+extension EdgeStoreEngine.GraphError : Swift.Equatable {}
+extension EdgeStoreEngine.GraphError : Swift.Hashable {}
 extension EdgeStoreEngine.TableSpacing : Swift.Equatable {}
 extension EdgeStoreEngine.TableSpacing : Swift.Hashable {}
