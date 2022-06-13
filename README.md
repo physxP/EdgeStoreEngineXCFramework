@@ -24,6 +24,8 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod 'EdgeStoreEngine'
 ```
+
+
 ## Quick Start
 
 [Login/SignUp](https://store.edgestore.ai) at our [Edge Store](https://store.edgestore.ai) and find a model that you like. In this tutorial we will be running the

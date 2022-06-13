@@ -244,9 +244,9 @@ public struct Recognitions : Swift.RangeReplaceableCollection {
   public func index(after i: Swift.Int) -> Swift.Int
   public init()
   public mutating func applying(t: CoreGraphics.CGAffineTransform)
-  public func draw(pixelBuffer: CoreVideo.CVPixelBuffer, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
-  public func draw(cgImage: CoreGraphics.CGImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
-  public func draw(uiImage: UIKit.UIImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> UIKit.UIImage
+  public func draw(image: CoreVideo.CVPixelBuffer, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
+  public func draw(image: CoreGraphics.CGImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> CoreGraphics.CGImage?
+  public func draw(image: UIKit.UIImage, minDetectionConfidence: CoreGraphics.CGFloat = 0.5, minKeypointsConfidence: CoreGraphics.CGFloat = 0.3) -> UIKit.UIImage
   public typealias Iterator = Swift.IndexingIterator<EdgeStoreEngine.Recognitions>
 }
 extension EdgeStoreEngine.Recognitions {
@@ -276,6 +276,14 @@ extension EdgeStoreEngine.Recognitions {
   public subscript(bounds: EdgeStoreEngine.Recognitions.Index) -> EdgeStoreEngine.Recognitions.Element {
     get
     set(value)
+  }
+}
+public enum TextDrawOrientation {
+  case Default, XMirrored
+  public static func == (a: EdgeStoreEngine.TextDrawOrientation, b: EdgeStoreEngine.TextDrawOrientation) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
   }
 }
 public enum TableSpacing {
@@ -337,5 +345,7 @@ extension UIKit.UIImage {
 }
 extension EdgeStoreEngine.GraphError : Swift.Equatable {}
 extension EdgeStoreEngine.GraphError : Swift.Hashable {}
+extension EdgeStoreEngine.TextDrawOrientation : Swift.Equatable {}
+extension EdgeStoreEngine.TextDrawOrientation : Swift.Hashable {}
 extension EdgeStoreEngine.TableSpacing : Swift.Equatable {}
 extension EdgeStoreEngine.TableSpacing : Swift.Hashable {}
