@@ -1,4 +1,4 @@
-# EdgeStoreEngine
+# edge-engine
 
 [![CI Status](https://img.shields.io/travis/48580461/EdgeStoreEngine.svg?style=flat)](https://travis-ci.org/48580461/EdgeStoreEngine)
 [![Version](https://img.shields.io/cocoapods/v/EdgeStoreEngine.svg?style=flat)](https://cocoapods.org/pods/EdgeStoreEngine)
