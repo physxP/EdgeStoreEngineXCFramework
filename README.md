@@ -25,10 +25,9 @@ it, simply add the following line to your Podfile:
 pod 'EdgeStoreEngine'
 ```
 
-
 ## Quick Start
 
-[Login/SignUp](https://store.edgestore.ai) at our [Edge Store](https://store.edgestore.ai) and find a model that you like. In this tutorial we will be running the
+Visit the [Edge Store](https://store.edgestore.ai) and find a model that you like. In this tutorial we will be running the
 amazing [Centernet Keypoints](https://store.edgestore.ai/home/model?model=centernet-keypoints) model. This model detects person's bounding box and keypoints.  Download the model and add the downloaded model.edgem file in your assets folder. edgem is our file extension for sdk compatible models. 
 
 ### Running the Model
@@ -82,6 +81,14 @@ for person in results {
     let keypoints: Keypoints = person.keypoints!
 }
 ```
+
+## Tutorials
+
+Here are a few tutorials to further explore the Edge Engine:
+- [Object Detection](https://github.com/physxP/EdgeDocs/blob/main/use_cases/object-detection.md)
+- [Human Pose Estimation](https://github.com/physxP/EdgeDocs/blob/main/use_cases/pose-detection.md)
+- [Person and Object Segmentation](https://github.com/physxP/EdgeDocs/blob/main/use_cases/selfie-segmentation.md)
+
 
 ## Options
 This section briefly discusses all the options that you can configure for the model. By default best options for common devices are already configured. Modify these if you have crashes or need to finetune performance.
