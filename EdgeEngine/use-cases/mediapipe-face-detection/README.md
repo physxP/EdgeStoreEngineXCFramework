@@ -10,7 +10,7 @@ MediaPipe Face Detection is an ultrafast face detection solution that comes with
 
 This model is available in **v0.2.1** or above for the sdk. To install latest sdk version add following line in your Podfile :
 ```ruby
-pod 'EdgeStoreEngine' , git: 'https://github.com/physxP/EdgeStoreEngineXCFramework.git'
+pod 'EdgeStoreEngine' , git: 'https://github.com/physxP/EdgeStoreEngineXCFramework/tree/main/EdgeEngine.git'
 ```
 
 
