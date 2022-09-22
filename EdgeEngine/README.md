@@ -149,3 +149,4 @@ EdgeEngine is available under the Edge Store EULA. See the LICENSE file for more
 ### License Summary
 
 You can use this SDK in your apps for commercial purposes but modification / reverse engineering of SDK is not allowed.
+

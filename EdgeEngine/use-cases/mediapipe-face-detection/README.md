@@ -81,3 +81,4 @@ Our coordinate system is same as used in UIKit. i.e.  our origin is at top left 
 The recognitions object returned after model execution provides coordinates in image domain. i.e. 0 < x < Input Image Width and 0 < y < Input Image Height. 
 
 You can directly apply transformations on Recognitions object by using the Recognitions.applying function with CGAffineTransform.
+

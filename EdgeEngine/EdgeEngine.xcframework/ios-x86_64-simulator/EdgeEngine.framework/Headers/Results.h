@@ -29,10 +29,10 @@ struct ResultOpaque;
 /// @param detection It is an ResultOpaque object which contain ProtoResultHolder Class object from external Class or Method.
 - (id) initWithResultHolder:(struct ResultOpaque *) detection;
 /// This method draw the recognised result to an image.
-/// @param pixelBuffer The formate of an image should be a CVPixelBufferRef.
-- (void) drawResults: (CVPixelBufferRef) pixelBuffer;
+/// @param pixelBuffer CVPixelBufferRef.
+- (void) draw: (CVPixelBufferRef) pixelBuffer;
 /// This method transform the coordinates from given matrix (Form of:CGAffineTransform) and return Result Class object to use it for further transformation.
-/// @param affineTransformation The Matrix is in the form of CGAffineTransform.
+/// @param affineTransformation The transformation Matrix.
 - (Results *) affineCoordinatesTransform2d:(CGAffineTransform) affineTransformation;
 - (void) dealloc;
 

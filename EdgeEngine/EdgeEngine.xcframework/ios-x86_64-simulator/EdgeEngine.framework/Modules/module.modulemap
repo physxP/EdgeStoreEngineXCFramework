@@ -1,5 +1,5 @@
 framework module EdgeEngine {
-  umbrella header "EdgeEngineFramework.h"
+  umbrella header "EdgeEngine.h"
   export *
   module * { export * }
 }

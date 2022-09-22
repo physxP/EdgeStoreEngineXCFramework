@@ -28,9 +28,9 @@ struct OpaqueSegmentation;
 /// @param bufferResultsHolder It is an OpaqueSegmentation object which contain SemanticSegmentationHolder Class object from external Class or Method.
 - (id) initWithSemanticSegmentation: (struct OpaqueSegmentation *) bufferResultsHolder;
 /// Pass custom Heigt, Width and Aspect Reatio of Image and this method return the result as CVPixelBufferRef object.
-/// @param width Width of Image as Int form.
-/// @param height Height of imag as Int form.
-/// @param aspectRatio aspectRatio as BOOL value 'Yes' or 'No'.
+/// @param width Width of Image.
+/// @param height Height of imag.
+/// @param aspectRatio aspectRatio value 'Yes' or 'No'.
 - (CVPixelBufferRef) getMask:(int) width height:(int) height aspectRatio:(bool) aspectRatio;
 - (void) dealloc;
 
